@@ -132,6 +132,7 @@ definitions. */
 .extern uxTimerIncrementsForOneTick /* size_t type so 32-bit on 32-bit core and 64-bits on 64-bit core. */
 .extern xISRStackTop
 .extern portasmHANDLE_INTERRUPT
+.extern exception_handler
 
 /*-----------------------------------------------------------*/
 
@@ -308,10 +309,11 @@ test_if_environment_call:
     j processed_source
 
 is_exception:
-    csrr t0, mcause                     /* For viewing in the debugger only. */
-    csrr t1, mepc                       /* For viewing in the debugger only */
-    csrr t2, mstatus
-    j is_exception                      /* No other exceptions handled yet. */
+    csrr a0, mcause         /* Load exception cause into first argument */
+    csrr a1, mepc           /* Load exception PC into second argument */
+    csrr a2, mstatus        /* Load status register into third argument */
+    call exception_handler  /* Call the C exception handler */
+    j .                     /* Should not return, but if it does, loop forever */
 
 as_yet_unhandled:
     csrr t0, mcause                     /* For viewing in the debugger only. */
