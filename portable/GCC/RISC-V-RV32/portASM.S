@@ -309,9 +309,13 @@ test_if_environment_call:
     j processed_source
 
 is_exception:
-    csrr a0, mcause         /* Load exception cause into first argument */
-    csrr a1, mepc           /* Load exception PC into second argument */
-    csrr a2, mstatus        /* Load status register into third argument */
+    csrr a0, mcause         /* Machine trap cause. */
+    csrr a1, mepc           /* Machine exception program counter. */
+    csrr a2, mtvec          /* Machine trap-handler base address. */
+    csrr a3, mstatus        /* Machine status register. */
+    csrr a4, mip            /* Machine interrupt pending. */
+    csrr a5, mtval          /* Machine trap value. */
+    csrr a6, mscratch       /* Machine scratch register. */
     call exception_handler  /* Call the C exception handler */
     j .                     /* Should not return, but if it does, loop forever */
 
